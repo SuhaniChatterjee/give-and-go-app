@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Heart, LogOut, Package, Users, Truck, TrendingUp } from "lucide-react";
+import { useRealtimeDonations } from "@/hooks/useRealtimeDonations";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -15,6 +16,12 @@ const AdminDashboard = () => {
   const [donations, setDonations] = useState<any[]>([]);
   const [profiles, setProfiles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const loadData = useCallback(() => {
+    fetchData();
+  }, []);
+
+  useRealtimeDonations(loadData);
 
   useEffect(() => {
     checkAuth();

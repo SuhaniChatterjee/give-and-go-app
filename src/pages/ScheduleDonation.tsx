@@ -8,7 +8,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Heart, ArrowLeft, Loader2, Calendar } from "lucide-react";
+import { Heart, ArrowLeft, Loader2, Calendar, MapPin } from "lucide-react";
+import ImageUpload from "@/components/ImageUpload";
+import MapPicker from "@/components/MapPicker";
 
 const ScheduleDonation = () => {
   const navigate = useNavigate();
@@ -24,6 +26,9 @@ const ScheduleDonation = () => {
     preferred_date: "",
     preferred_time_slot: "",
     notes: "",
+    images: [] as string[],
+    geo_lat: null as number | null,
+    geo_lng: null as number | null,
   });
 
   useEffect(() => {
@@ -200,6 +205,36 @@ const ScheduleDonation = () => {
                       </SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+
+                {/* Images */}
+                <div className="space-y-2">
+                  <Label>Upload Item Photos (Optional)</Label>
+                  <ImageUpload
+                    onImagesChange={(urls) => handleInputChange("images", urls)}
+                    maxImages={5}
+                    existingImages={formData.images}
+                  />
+                </div>
+
+                {/* Map Location Picker */}
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4" />
+                    Select Pickup Location on Map (Optional)
+                  </Label>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Click on the map or allow location access to set your pickup location
+                  </p>
+                  <MapPicker
+                    onLocationSelect={(lat, lng, address) => {
+                      handleInputChange("geo_lat", lat);
+                      handleInputChange("geo_lng", lng);
+                      if (!formData.pickup_address) {
+                        handleInputChange("pickup_address", address);
+                      }
+                    }}
+                  />
                 </div>
 
                 {/* Additional Notes */}

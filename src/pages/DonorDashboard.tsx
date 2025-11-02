@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import {
   LogOut,
   Calendar,
 } from "lucide-react";
+import { useRealtimeDonations } from "@/hooks/useRealtimeDonations";
 
 const DonorDashboard = () => {
   const navigate = useNavigate();
@@ -22,6 +23,12 @@ const DonorDashboard = () => {
   const [profile, setProfile] = useState<any>(null);
   const [donations, setDonations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const loadDonations = useCallback(() => {
+    fetchDonations();
+  }, []);
+
+  useRealtimeDonations(loadDonations);
 
   useEffect(() => {
     checkAuth();
