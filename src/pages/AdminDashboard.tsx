@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Heart, LogOut, Package, Users, Truck, TrendingUp } from "lucide-react";
 import { useRealtimeDonations } from "@/hooks/useRealtimeDonations";
+import NotificationsPanel from "@/components/NotificationsPanel";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -115,6 +116,7 @@ const AdminDashboard = () => {
             <span className="text-xl font-bold text-foreground">DonateConnect Admin</span>
           </div>
           <div className="flex items-center gap-4">
+            <NotificationsPanel />
             <span className="text-sm text-muted-foreground">
               Welcome, {profile?.full_name || user?.email}
             </span>

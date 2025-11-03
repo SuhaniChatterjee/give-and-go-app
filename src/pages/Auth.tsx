@@ -121,6 +121,40 @@ const Auth = () => {
     }
   };
 
+  const handleDemoLogin = async (demoRole: string) => {
+    setLoading(true);
+    const demoCredentials: Record<string, { email: string; password: string }> = {
+      donor: { email: 'donor1@demo.com', password: 'demodemo' },
+      volunteer: { email: 'vol1@demo.com', password: 'demodemo' },
+      admin: { email: 'admin@demo.com', password: 'demodemo' }
+    };
+
+    try {
+      const { email, password } = demoCredentials[demoRole];
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Demo Login Successful!",
+        description: `Logged in as demo ${demoRole}`,
+      });
+
+      redirectBasedOnRole(data.user.user_metadata.role || demoRole);
+    } catch (error: any) {
+      toast({
+        title: "Demo Login Failed",
+        description: "Demo accounts need to be created first. Please sign up to create them.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-subtle flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -212,6 +246,53 @@ const Auth = () => {
                 {mode === "signin" ? "Sign In" : "Create Account"}
               </Button>
             </form>
+
+            {/* Demo Login Section */}
+            {mode === "signin" && (
+              <div className="mt-6">
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-border" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-card px-2 text-muted-foreground">Try Demo</span>
+                  </div>
+                </div>
+                
+                <div className="mt-4 grid grid-cols-3 gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDemoLogin('donor')}
+                    disabled={loading}
+                    className="text-xs"
+                  >
+                    Donor
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDemoLogin('volunteer')}
+                    disabled={loading}
+                    className="text-xs"
+                  >
+                    Volunteer
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDemoLogin('admin')}
+                    disabled={loading}
+                    className="text-xs"
+                  >
+                    Admin
+                  </Button>
+                </div>
+              </div>
+            )}
 
             <div className="mt-4 text-center text-sm">
               {mode === "signin" ? (

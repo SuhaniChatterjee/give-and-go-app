@@ -13,8 +13,11 @@ import {
   CheckCircle,
   LogOut,
   Calendar,
+  Download,
 } from "lucide-react";
 import { useRealtimeDonations } from "@/hooks/useRealtimeDonations";
+import NotificationsPanel from "@/components/NotificationsPanel";
+import { generateDonationReceipt } from "@/utils/pdfGenerator";
 
 const DonorDashboard = () => {
   const navigate = useNavigate();
@@ -99,6 +102,20 @@ const DonorDashboard = () => {
     navigate("/");
   };
 
+  const handleDownloadReceipt = (donation: any) => {
+    generateDonationReceipt({
+      donationId: donation.id.slice(0, 8).toUpperCase(),
+      donorName: profile?.full_name || 'Donor',
+      itemCategory: donation.item_category,
+      itemDescription: donation.item_description,
+      quantity: donation.item_quantity,
+      pickupAddress: donation.pickup_address,
+      pickupDate: donation.preferred_date,
+      volunteerName: 'Volunteer', // In production, fetch volunteer name
+      completedAt: donation.updated_at
+    });
+  };
+
   const getStatusBadge = (status: string) => {
     const variants: Record<string, any> = {
       pending: { variant: "secondary", label: "Pending" },
@@ -129,6 +146,7 @@ const DonorDashboard = () => {
             <span className="text-xl font-bold text-foreground">DonateConnect</span>
           </div>
           <div className="flex items-center gap-4">
+            <NotificationsPanel />
             <span className="text-sm text-muted-foreground">
               Welcome, {profile?.full_name || user?.email}
             </span>
@@ -241,6 +259,17 @@ const DonorDashboard = () => {
                         <div className="text-right">
                           <p className="text-sm text-muted-foreground">Quantity</p>
                           <p className="text-2xl font-bold text-primary">{donation.item_quantity}</p>
+                          {donation.status === 'completed' && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="mt-2"
+                              onClick={() => handleDownloadReceipt(donation)}
+                            >
+                              <Download className="h-4 w-4 mr-2" />
+                              Receipt
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </CardContent>

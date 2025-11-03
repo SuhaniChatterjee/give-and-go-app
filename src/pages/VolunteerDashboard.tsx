@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Heart, LogOut, Package, MapPin, Calendar, Clock, CheckCircle } from "lucide-react";
 import { useRealtimeDonations } from "@/hooks/useRealtimeDonations";
+import NotificationsPanel from "@/components/NotificationsPanel";
+import RouteMap from "@/components/RouteMap";
 
 const VolunteerDashboard = () => {
   const navigate = useNavigate();
@@ -167,6 +169,7 @@ const VolunteerDashboard = () => {
             <span className="text-xl font-bold text-foreground">DonateConnect</span>
           </div>
           <div className="flex items-center gap-4">
+            <NotificationsPanel />
             <span className="text-sm text-muted-foreground">
               Welcome, {profile?.full_name || user?.email}
             </span>
@@ -262,7 +265,7 @@ const VolunteerDashboard = () => {
                           Mark as In Progress
                         </Button>
                       )}
-                      {donation.status === "in_progress" && (
+                       {donation.status === "in_progress" && (
                         <Button
                           variant="hero"
                           size="sm"
@@ -270,6 +273,20 @@ const VolunteerDashboard = () => {
                         >
                           Mark as Completed
                         </Button>
+                      )}
+                      
+                      {/* Route Map */}
+                      {donation.geo_lat && donation.geo_lng && (
+                        <div className="mt-4">
+                          <RouteMap
+                            donorLat={donation.geo_lat}
+                            donorLng={donation.geo_lng}
+                            donorAddress={donation.pickup_address}
+                            volunteerLat={profile?.geo_lat}
+                            volunteerLng={profile?.geo_lng}
+                            volunteerName={profile?.full_name}
+                          />
+                        </div>
                       )}
                     </CardContent>
                   </Card>
