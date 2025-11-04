@@ -71,14 +71,11 @@ export default function MapPicker({ onLocationSelect, initialLat = 28.6139, init
 
   return (
     <div className="h-[400px] w-full rounded-lg overflow-hidden border border-border">
-      <MapContainer
-        center={[initialLat, initialLng]}
-        zoom={13}
-        scrollWheelZoom={false}
-        style={{ height: '100%', width: '100%' }}
-      >
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <LocationMarker onLocationSelect={handleLocationSelect} />
+      <MapContainer center={[initialLat, initialLng]} zoom={13} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
+        <>
+          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+          <LocationMarker onLocationSelect={handleLocationSelect} />
+        </>
       </MapContainer>
     </div>
   );
