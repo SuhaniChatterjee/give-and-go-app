@@ -90,7 +90,7 @@ const ScheduleDonation = () => {
           </Link>
           <div className="flex items-center gap-2">
             <Heart className="h-6 w-6 text-primary fill-primary" />
-            <span className="text-xl font-bold text-foreground">DonateConnect</span>
+            <span className="text-xl font-bold text-foreground">KindKart</span>
           </div>
         </div>
       </nav>

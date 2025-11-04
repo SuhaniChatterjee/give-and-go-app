@@ -15,7 +15,7 @@ const Landing = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <Heart className="h-6 w-6 text-primary fill-primary" />
-            <span className="text-xl font-bold text-foreground">DonateConnect</span>
+            <span className="text-xl font-bold text-foreground">KindKart</span>
           </Link>
           <div className="flex items-center gap-4">
             <Link to="/auth">
@@ -149,7 +149,7 @@ const Landing = () => {
           </p>
           <Link to="/auth?mode=signup">
             <Button variant="hero" size="lg">
-              Join DonateConnect Today <ArrowRight className="ml-2 h-5 w-5" />
+              Join KindKart Today <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
         </div>
@@ -160,7 +160,7 @@ const Landing = () => {
         <div className="container mx-auto text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
             <Heart className="h-5 w-5 fill-primary" />
-            <span className="font-semibold">DonateConnect</span>
+            <span className="font-semibold">KindKart</span>
           </div>
           <p className="text-sm opacity-80">
             © 2025 Community Donation Pickup Scheduling System. All rights reserved.

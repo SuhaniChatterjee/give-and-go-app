@@ -103,7 +103,7 @@ const Auth = () => {
 
       toast({
         title: "Account created!",
-        description: "Welcome to DonateConnect. You can now sign in.",
+        description: "Welcome to KindKart. You can now sign in.",
       });
 
       // Auto sign in after signup
@@ -160,7 +160,7 @@ const Auth = () => {
       <div className="w-full max-w-md">
         <Link to="/" className="flex items-center justify-center gap-2 mb-8">
           <Heart className="h-8 w-8 text-primary fill-primary" />
-          <span className="text-2xl font-bold text-foreground">DonateConnect</span>
+          <span className="text-2xl font-bold text-foreground">KindKart</span>
         </Link>
 
         <Card className="shadow-strong">

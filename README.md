@@ -1,4 +1,4 @@
-# Community Donation Pickup Scheduling System (CDPSS) - Demo
+# KindKart - Community Donation Pickup Scheduling System
 
 A comprehensive demo of the Community Donation Pickup Scheduling System that allows donors to schedule donation pickups, volunteers to accept and complete pickups, and admins to oversee the entire ecosystem.
 
