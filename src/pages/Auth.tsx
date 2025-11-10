@@ -23,15 +23,33 @@ const Auth = () => {
 
   useEffect(() => {
     // Check if user is already logged in
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session) {
-        redirectBasedOnRole(session.user.user_metadata.role || "donor");
+        // Fetch role from user_roles table
+        const { data: roleData } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', session.user.id)
+          .limit(1)
+          .single();
+        
+        const userRole = roleData?.role || 'donor';
+        redirectBasedOnRole(userRole);
       }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "SIGNED_IN" && session) {
-        redirectBasedOnRole(session.user.user_metadata.role || "donor");
+        // Fetch role from user_roles table
+        const { data: roleData } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', session.user.id)
+          .limit(1)
+          .single();
+        
+        const userRole = roleData?.role || 'donor';
+        redirectBasedOnRole(userRole);
       }
     });
 
@@ -69,7 +87,16 @@ const Auth = () => {
         description: "You've successfully signed in.",
       });
 
-      redirectBasedOnRole(data.user.user_metadata.role || "donor");
+      // Fetch role from user_roles table
+      const { data: roleData } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', data.user.id)
+        .limit(1)
+        .single();
+      
+      const userRole = roleData?.role || 'donor';
+      redirectBasedOnRole(userRole);
     } catch (error: any) {
       toast({
         title: "Sign in failed",

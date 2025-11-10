@@ -18,7 +18,41 @@ serve(async (req) => {
   }
 
   try {
+    // Verify authentication
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Missing authorization header' }),
+        { 
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
+    // Create Supabase client to verify the user
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+      global: {
+        headers: { Authorization: authHeader }
+      }
+    });
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { 
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
     const { to, message }: SMSRequest = await req.json();
+    console.log('Authenticated user sending SMS:', user.id);
     console.log('Sending SMS to:', to);
 
     const accountSid = Deno.env.get('TWILIO_ACCOUNT_SID');
@@ -59,7 +93,7 @@ serve(async (req) => {
       throw new Error(result.message || 'Failed to send SMS');
     }
 
-    console.log('SMS sent successfully:', result.sid);
+    console.log('SMS sent successfully:', result.sid, 'by user:', user.id);
 
     return new Response(
       JSON.stringify({ success: true, sid: result.sid }),

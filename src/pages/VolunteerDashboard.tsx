@@ -52,7 +52,15 @@ const VolunteerDashboard = () => {
       return;
     }
 
-    if (data.role !== "volunteer") {
+    // Check role from user_roles table
+    const { data: roleData } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId)
+      .limit(1)
+      .single();
+    
+    if (roleData && roleData.role !== 'volunteer') {
       navigate("/auth");
       toast({
         title: "Access Denied",

@@ -51,7 +51,15 @@ const AdminDashboard = () => {
       return;
     }
 
-    if (!["admin", "ngo"].includes(data.role)) {
+    // Check role from user_roles table
+    const { data: roleData } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId)
+      .limit(1)
+      .single();
+    
+    if (roleData && !['admin', 'ngo'].includes(roleData.role)) {
       navigate("/auth");
       toast({
         title: "Access Denied",
