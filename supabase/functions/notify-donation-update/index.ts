@@ -7,7 +7,7 @@ const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 serve(async (req) => {
   try {
     const payload = await req.json();
-    console.log('Donation update webhook received:', payload);
+    console.log('Donation update webhook received');
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
@@ -78,10 +78,10 @@ serve(async (req) => {
         const response = await supabase.functions.invoke('send-sms', {
           body: { to, message }
         });
-        console.log('SMS sent to', to, ':', response);
+        console.log('SMS sent successfully');
         return response;
       } catch (error) {
-        console.error('Failed to send SMS to', to, ':', error);
+        console.error('Failed to send SMS:', error);
         return null;
       }
     });
