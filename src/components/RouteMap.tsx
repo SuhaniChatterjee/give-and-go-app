@@ -122,7 +122,6 @@ export default function RouteMap({
           >
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             
-            {/* Donor location marker */}
             <Marker position={[donorLat, donorLng]} icon={DonorIcon}>
               <Popup>
                 <div className="p-2">
@@ -132,8 +131,7 @@ export default function RouteMap({
               </Popup>
             </Marker>
 
-            {/* Volunteer location marker */}
-            {volunteerLat && volunteerLng && (
+            {volunteerLat && volunteerLng ? (
               <Marker position={[volunteerLat, volunteerLng]} icon={VolunteerIcon}>
                 <Popup>
                   <div className="p-2">
@@ -142,17 +140,16 @@ export default function RouteMap({
                   </div>
                 </Popup>
               </Marker>
-            )}
+            ) : null}
 
-            {/* Route line */}
-            {route.length > 0 && (
+            {route.length > 0 ? (
               <Polyline
                 positions={route}
                 color="#0ea5e9"
                 weight={4}
                 opacity={0.7}
               />
-            )}
+            ) : null}
           </MapContainer>
         </div>
 
