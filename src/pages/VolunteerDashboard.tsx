@@ -78,11 +78,12 @@ const VolunteerDashboard = () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
 
-    // Fetch available donations (pending or assigned but not to this volunteer)
+    // Fetch available donations (only pending, not yet assigned)
     const { data: available, error: availError } = await supabase
       .from("donations")
       .select("*")
-      .in("status", ["pending", "assigned"])
+      .eq("status", "pending")
+      .is("assigned_volunteer_id", null)
       .order("created_at", { ascending: false })
       .limit(10);
 
@@ -127,10 +128,11 @@ const VolunteerDashboard = () => {
       });
     } else {
       toast({
-        title: "Success",
-        description: "Donation accepted! It's now in your assignments.",
+        title: "Success!",
+        description: "Assignment accepted! Redirecting to details...",
       });
-      fetchDonations();
+      // Redirect to assignment detail page
+      setTimeout(() => navigate(`/assignment/${donationId}`), 1000);
     }
   };
 
@@ -237,7 +239,11 @@ const VolunteerDashboard = () => {
             ) : (
               <div className="space-y-4">
                 {assignedDonations.map((donation) => (
-                  <Card key={donation.id} className="border-2 border-primary/20">
+                  <Card 
+                    key={donation.id} 
+                    className="border-2 border-primary/20 hover:shadow-medium transition-shadow cursor-pointer"
+                    onClick={() => navigate(`/assignment/${donation.id}`)}
+                  >
                     <CardContent className="pt-6">
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex-1">
@@ -264,38 +270,17 @@ const VolunteerDashboard = () => {
                           </div>
                         </div>
                       </div>
-                      {donation.status === "accepted" && (
-                        <Button
-                          variant="hero"
-                          size="sm"
-                          onClick={() => handleUpdateStatus(donation.id, "in_progress")}
-                        >
-                          Mark as In Progress
-                        </Button>
-                      )}
-                       {donation.status === "in_progress" && (
-                        <Button
-                          variant="hero"
-                          size="sm"
-                          onClick={() => handleUpdateStatus(donation.id, "completed")}
-                        >
-                          Mark as Completed
-                        </Button>
-                      )}
-                      
-                      {/* Route Map */}
-                      {donation.geo_lat && donation.geo_lng && (
-                        <div className="mt-4">
-                          <RouteMap
-                            donorLat={donation.geo_lat}
-                            donorLng={donation.geo_lng}
-                            donorAddress={donation.pickup_address}
-                            volunteerLat={profile?.geo_lat}
-                            volunteerLng={profile?.geo_lng}
-                            volunteerName={profile?.full_name}
-                          />
-                        </div>
-                      )}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/assignment/${donation.id}`);
+                        }}
+                      >
+                        View Details & Navigate
+                      </Button>
                     </CardContent>
                   </Card>
                 ))}

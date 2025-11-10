@@ -9,6 +9,7 @@ import DonorDashboard from "./pages/DonorDashboard";
 import VolunteerDashboard from "./pages/VolunteerDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import ScheduleDonation from "./pages/ScheduleDonation";
+import AssignmentDetail from "./pages/AssignmentDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,8 @@ const App = () => (
           <Route path="/donor" element={<DonorDashboard />} />
           <Route path="/donor/schedule" element={<ScheduleDonation />} />
           <Route path="/volunteer" element={<VolunteerDashboard />} />
+          <Route path="/volunteer-dashboard" element={<VolunteerDashboard />} />
+          <Route path="/assignment/:donationId" element={<AssignmentDetail />} />
           <Route path="/admin" element={<AdminDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
