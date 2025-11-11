@@ -131,25 +131,27 @@ export default function RouteMap({
               </Popup>
             </Marker>
 
-            {volunteerLat && volunteerLng ? (
-              <Marker position={[volunteerLat, volunteerLng]} icon={VolunteerIcon}>
-                <Popup>
-                  <div className="p-2">
-                    <p className="font-semibold">{volunteerName || 'Volunteer'}</p>
-                    <p className="text-sm text-muted-foreground">Current Location</p>
-                  </div>
-                </Popup>
-              </Marker>
-            ) : null}
+            {volunteerLat && volunteerLng && (
+              <>
+                <Marker position={[volunteerLat, volunteerLng]} icon={VolunteerIcon}>
+                  <Popup>
+                    <div className="p-2">
+                      <p className="font-semibold">{volunteerName || 'Volunteer'}</p>
+                      <p className="text-sm text-muted-foreground">Current Location</p>
+                    </div>
+                  </Popup>
+                </Marker>
 
-            {route.length > 0 ? (
-              <Polyline
-                positions={route}
-                color="#0ea5e9"
-                weight={4}
-                opacity={0.7}
-              />
-            ) : null}
+                {route.length > 0 && (
+                  <Polyline
+                    positions={route}
+                    color="#0ea5e9"
+                    weight={4}
+                    opacity={0.7}
+                  />
+                )}
+              </>
+            )}
           </MapContainer>
         </div>
 
