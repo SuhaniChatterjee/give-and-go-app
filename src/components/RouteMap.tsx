@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Polyline, LayerGroup } from 'react-leaflet';
+import { useEffect, useRef, useState } from 'react';
+
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -39,6 +39,7 @@ interface RouteMapProps {
   donorAddress: string;
   volunteerName?: string;
 }
+
 
 export default function RouteMap({
   donorLat,
@@ -87,9 +88,70 @@ export default function RouteMap({
     }
   };
 
+  // Leaflet map refs and layers
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<L.Map | null>(null);
+  const donorMarkerRef = useRef<L.Marker | null>(null);
+  const volunteerMarkerRef = useRef<L.Marker | null>(null);
+  const routeLayerRef = useRef<L.Polyline | null>(null);
+  const tileLayerRef = useRef<L.TileLayer | null>(null);
+
   const center: [number, number] = volunteerLat && volunteerLng
     ? [(donorLat + volunteerLat) / 2, (donorLng + volunteerLng) / 2]
     : [donorLat, donorLng];
+  const zoom = volunteerLat && volunteerLng ? 12 : 14;
+
+  // Initialize map and update view
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    if (!mapRef.current) {
+      const map = L.map(containerRef.current, { scrollWheelZoom: false }).setView(center, zoom);
+      tileLayerRef.current = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+      mapRef.current = map;
+    } else {
+      mapRef.current.setView(center, zoom);
+    }
+  }, [center[0], center[1], zoom]);
+
+  // Update markers and route polyline
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    donorMarkerRef.current?.remove();
+    volunteerMarkerRef.current?.remove();
+    routeLayerRef.current?.remove();
+
+    donorMarkerRef.current = L.marker([donorLat, donorLng], { icon: DonorIcon })
+      .bindPopup(`<div><strong>Pickup Location</strong><br/><span style="font-size:12px;opacity:0.8;">${donorAddress}</span></div>`)
+      .addTo(map);
+
+    if (volunteerLat && volunteerLng) {
+      volunteerMarkerRef.current = L.marker([volunteerLat, volunteerLng], { icon: VolunteerIcon })
+        .bindPopup(`<div><strong>${volunteerName || 'Volunteer'}</strong><br/><span style="font-size:12px;opacity:0.8;">Current Location</span></div>`)
+        .addTo(map);
+    }
+
+    if (route.length > 0) {
+      routeLayerRef.current = L.polyline(route, { color: '#0ea5e9', weight: 4, opacity: 0.7 }).addTo(map);
+    }
+  }, [donorLat, donorLng, volunteerLat, volunteerLng, donorAddress, volunteerName, route]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+      donorMarkerRef.current = null;
+      volunteerMarkerRef.current = null;
+      routeLayerRef.current = null;
+      tileLayerRef.current = null;
+    };
+  }, []);
+
 
   return (
     <Card>
@@ -114,45 +176,7 @@ export default function RouteMap({
         )}
         
         <div className="h-[400px] w-full rounded-lg overflow-hidden border border-border">
-          <MapContainer
-            center={center}
-            zoom={volunteerLat && volunteerLng ? 12 : 14}
-            scrollWheelZoom={false}
-            style={{ height: '100%', width: '100%' }}
-          >
-            <LayerGroup>
-              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-              
-              <Marker position={[donorLat, donorLng]} icon={DonorIcon}>
-                <Popup>
-                  <div className="p-2">
-                    <p className="font-semibold">Pickup Location</p>
-                    <p className="text-sm text-muted-foreground">{donorAddress}</p>
-                  </div>
-                </Popup>
-              </Marker>
-
-              {volunteerLat && volunteerLng ? (
-                <Marker position={[volunteerLat, volunteerLng]} icon={VolunteerIcon}>
-                  <Popup>
-                    <div className="p-2">
-                      <p className="font-semibold">{volunteerName || 'Volunteer'}</p>
-                      <p className="text-sm text-muted-foreground">Current Location</p>
-                    </div>
-                  </Popup>
-                </Marker>
-              ) : null}
-
-              {route.length > 0 ? (
-                <Polyline
-                  positions={route}
-                  color="#0ea5e9"
-                  weight={4}
-                  opacity={0.7}
-                />
-              ) : null}
-            </LayerGroup>
-          </MapContainer>
+          <div ref={containerRef} style={{ height: '100%', width: '100%' }} />
         </div>
 
         {!volunteerLat && !volunteerLng && (
