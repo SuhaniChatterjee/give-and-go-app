@@ -109,30 +109,43 @@ const VolunteerDashboard = () => {
   };
 
   const handleAcceptDonation = async (donationId: string) => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return;
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({
+          title: "Authentication required",
+          description: "Please log in to accept assignments.",
+          variant: "destructive",
+        });
+        return;
+      }
 
-    const { error } = await supabase
-      .from("donations")
-      .update({
-        status: "accepted",
-        assigned_volunteer_id: session.user.id,
-      })
-      .eq("id", donationId);
-
-    if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to accept donation.",
-        variant: "destructive",
+      // Call the atomic RPC function
+      const { data, error } = await supabase.rpc('accept_donation', {
+        donation_id: donationId
       });
-    } else {
+
+      if (error) throw error;
+
       toast({
         title: "Success!",
         description: "Assignment accepted! Redirecting to details...",
       });
-      // Redirect to assignment detail page
-      setTimeout(() => navigate(`/assignment/${donationId}`), 1000);
+
+      // Refetch donations to update both lists
+      await fetchDonations();
+
+      // Navigate to assignment detail page
+      setTimeout(() => navigate(`/assignment/${donationId}`), 800);
+    } catch (error: any) {
+      console.error("Error accepting donation:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to accept assignment. It may already be taken.",
+        variant: "destructive",
+      });
+      // Refetch to update UI even on error
+      fetchDonations();
     }
   };
 
