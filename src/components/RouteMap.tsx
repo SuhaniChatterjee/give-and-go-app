@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, LayerGroup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -120,19 +120,19 @@ export default function RouteMap({
             scrollWheelZoom={false}
             style={{ height: '100%', width: '100%' }}
           >
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-            
-            <Marker position={[donorLat, donorLng]} icon={DonorIcon}>
-              <Popup>
-                <div className="p-2">
-                  <p className="font-semibold">Pickup Location</p>
-                  <p className="text-sm text-muted-foreground">{donorAddress}</p>
-                </div>
-              </Popup>
-            </Marker>
+            <LayerGroup>
+              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+              
+              <Marker position={[donorLat, donorLng]} icon={DonorIcon}>
+                <Popup>
+                  <div className="p-2">
+                    <p className="font-semibold">Pickup Location</p>
+                    <p className="text-sm text-muted-foreground">{donorAddress}</p>
+                  </div>
+                </Popup>
+              </Marker>
 
-            {volunteerLat && volunteerLng && (
-              <>
+              {volunteerLat && volunteerLng ? (
                 <Marker position={[volunteerLat, volunteerLng]} icon={VolunteerIcon}>
                   <Popup>
                     <div className="p-2">
@@ -141,17 +141,17 @@ export default function RouteMap({
                     </div>
                   </Popup>
                 </Marker>
+              ) : null}
 
-                {route.length > 0 && (
-                  <Polyline
-                    positions={route}
-                    color="#0ea5e9"
-                    weight={4}
-                    opacity={0.7}
-                  />
-                )}
-              </>
-            )}
+              {route.length > 0 ? (
+                <Polyline
+                  positions={route}
+                  color="#0ea5e9"
+                  weight={4}
+                  opacity={0.7}
+                />
+              ) : null}
+            </LayerGroup>
           </MapContainer>
         </div>
 
