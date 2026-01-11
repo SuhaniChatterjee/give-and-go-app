@@ -78,16 +78,11 @@ const VolunteerDashboard = () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
 
-    // Fetch available donations (only pending, not yet assigned)
+    // Fetch available donations using secure RPC (masks full addresses)
     const { data: available, error: availError } = await supabase
-      .from("donations")
-      .select("*")
-      .eq("status", "pending")
-      .is("assigned_volunteer_id", null)
-      .order("created_at", { ascending: false })
-      .limit(10);
+      .rpc('get_available_donations');
 
-    // Fetch assigned donations
+    // Fetch assigned donations (volunteer can see full details via RLS)
     const { data: assigned, error: assignedError } = await supabase
       .from("donations")
       .select("*")
@@ -326,7 +321,7 @@ const VolunteerDashboard = () => {
                           <div className="space-y-2 text-sm text-muted-foreground">
                             <div className="flex items-center gap-2">
                               <MapPin className="h-4 w-4" />
-                              <span>{donation.pickup_address}</span>
+                              <span>{donation.pickup_area || 'Area available after acceptance'}</span>
                             </div>
                             <div className="flex items-center gap-4">
                               <div className="flex items-center gap-1">
