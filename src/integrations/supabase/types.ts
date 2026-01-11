@@ -211,6 +211,20 @@ export type Database = {
     }
     Functions: {
       accept_donation: { Args: { donation_id: string }; Returns: Json }
+      get_available_donations: {
+        Args: never
+        Returns: {
+          created_at: string
+          id: string
+          item_category: string
+          item_description: string
+          item_quantity: number
+          pickup_area: string
+          preferred_date: string
+          preferred_time_slot: string
+          status: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
