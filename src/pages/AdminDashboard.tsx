@@ -81,14 +81,19 @@ const AdminDashboard = () => {
       .select("*")
       .order("created_at", { ascending: false });
 
-    // Fetch all profiles
+    // Fetch all profiles (admins/NGOs can see all via RLS)
     const { data: profilesData, error: profilesError } = await supabase
       .from("profiles")
       .select("*")
       .order("created_at", { ascending: false });
 
-    if (donationsError || profilesError) {
-      console.error("Error fetching data:", donationsError || profilesError);
+    // Fetch all user roles for stats
+    const { data: rolesData, error: rolesError } = await supabase
+      .from("user_roles")
+      .select("user_id, role");
+
+    if (donationsError || profilesError || rolesError) {
+      console.error("Error fetching data:", donationsError || profilesError || rolesError);
       toast({
         title: "Error",
         description: "Failed to load dashboard data.",
@@ -96,7 +101,12 @@ const AdminDashboard = () => {
       });
     } else {
       setDonations(donationsData || []);
-      setProfiles(profilesData || []);
+      // Merge role from user_roles into profiles for display
+      const profilesWithRoles = (profilesData || []).map(profile => {
+        const userRole = rolesData?.find(r => r.user_id === profile.id);
+        return { ...profile, role: userRole?.role || 'donor' };
+      });
+      setProfiles(profilesWithRoles);
     }
     setLoading(false);
   };

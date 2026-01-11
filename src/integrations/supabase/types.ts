@@ -122,7 +122,6 @@ export type Database = {
           geo_lng: number | null
           id: string
           phone: string | null
-          role: Database["public"]["Enums"]["app_role"]
           updated_at: string | null
           verified: boolean | null
         }
@@ -135,7 +134,6 @@ export type Database = {
           geo_lng?: number | null
           id: string
           phone?: string | null
-          role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string | null
           verified?: boolean | null
         }
@@ -148,7 +146,6 @@ export type Database = {
           geo_lng?: number | null
           id?: string
           phone?: string | null
-          role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string | null
           verified?: boolean | null
         }
